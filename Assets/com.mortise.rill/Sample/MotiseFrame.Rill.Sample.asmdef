@@ -1,0 +1,20 @@
+{
+    "name": "MotiseFrame.Rill.Sample",
+    "rootNamespace": "",
+    "references": [
+        "GUID:785be0ea4937741dc87dab6fb296bcd1",
+        "GUID:63059ce13c3f44cd89d4969a29a7b071",
+        "GUID:b26a2c3ca6066408794ab1d14a1d181e",
+        "GUID:2c4b4ba238be84f45af530b10b80fc4a",
+        "GUID:c0f9232640cc54bd398549d008dadf49"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
