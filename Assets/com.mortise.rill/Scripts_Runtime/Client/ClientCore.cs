@@ -14,6 +14,11 @@ namespace MortiseFrame.Rill {
             ctx = new ClientContext();
         }
 
+        // Register
+        public void Register(Type msgType) {
+            ctx.RegisterMessage(msgType);
+        }
+
         // Tick 
         public void Tick(float dt) {
             ClientReceiveDomain.Tick_Receive(ctx, dt);

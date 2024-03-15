@@ -5,32 +5,32 @@ using System;
 
 namespace MortiseFrame.Rill {
 
-    public class ClientContext {
+    internal class ClientContext {
 
-        public bool isTest;
+        internal bool isTest;
 
         Socket client;
-        public Socket Client => client;
+        internal Socket Client => client;
 
         // Message
         Queue<IMessage> messageQueue;
 
         // Event
         ClientEventCenter evt;
-        public ClientEventCenter Evt => evt;
+        internal ClientEventCenter Evt => evt;
 
         // Protocol
         BiDictionary<byte, Type> protocolDicts;
 
         // Buffer
-        public byte[] readBuff;
-        public byte[] writeBuff;
+        internal byte[] readBuff;
+        internal byte[] writeBuff;
 
         // Service
         IDService idService;
-        public IDService IDService => idService;
+        internal IDService IDService => idService;
 
-        public ClientContext() {
+        internal ClientContext() {
             messageQueue = new Queue<IMessage>();
             readBuff = new byte[4096];
             writeBuff = new byte[4096];
@@ -38,41 +38,41 @@ namespace MortiseFrame.Rill {
             idService = new IDService();
         }
 
-        public void Client_Set(Socket socket) {
+        internal void Client_Set(Socket socket) {
             this.client = socket;
         }
 
         // Message
-        public void Message_Enqueue(IMessage message) {
+        internal void Message_Enqueue(IMessage message) {
             messageQueue.Enqueue(message);
         }
 
-        public bool Message_TryDequeue(out IMessage message) {
+        internal bool Message_TryDequeue(out IMessage message) {
             return messageQueue.TryDequeue(out message);
         }
 
-        public int Message_GetCount() {
+        internal int Message_GetCount() {
             return messageQueue.Count;
         }
 
         // Buffer
-        public void Buffer_ClearReadBuffer() {
+        internal void Buffer_ClearReadBuffer() {
             Array.Clear(readBuff, 0, readBuff.Length);
         }
 
-        public void Buffer_ClearWriteBuffer() {
+        internal void Buffer_ClearWriteBuffer() {
             Array.Clear(writeBuff, 0, writeBuff.Length);
         }
 
         // Protocol
-        public void RegisterMessage(IMessage msg) {
-            if (protocolDicts.ContainsValue(msg.GetType())) {
+        internal void RegisterMessage(Type msgType) {
+            if (!protocolDicts.ContainsValue(msgType)) {
                 var msgId = IDService.PickMsgId();
-                protocolDicts.Add(msgId, msg.GetType());
+                protocolDicts.Add(msgId, msgType);
             }
         }
 
-        public object GetMessage(byte id) {
+        internal object GetMessage(byte id) {
             var has = protocolDicts.TryGetByKey(id, out Type type);
             if (!has) {
                 throw new ArgumentException("No type found for the given ID.", id.ToString());
@@ -83,7 +83,7 @@ namespace MortiseFrame.Rill {
             return Activator.CreateInstance(type);
         }
 
-        public byte GetMessageID(IMessage msg) {
+        internal byte GetMessageID(IMessage msg) {
             var type = msg.GetType();
             var has = protocolDicts.TryGetByValue(type, out byte id);
             if (!has) {
@@ -92,7 +92,7 @@ namespace MortiseFrame.Rill {
             return id;
         }
 
-        public byte GetMessageID<T>() {
+        internal byte GetMessageID<T>() {
             var has = protocolDicts.TryGetByValue(typeof(T), out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
@@ -100,7 +100,7 @@ namespace MortiseFrame.Rill {
             return id;
         }
 
-        public void Clear() {
+        internal void Clear() {
             messageQueue.Clear();
             protocolDicts.Clear();
             evt.Clear();

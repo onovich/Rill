@@ -2,9 +2,9 @@ using MortiseFrame.LitIO;
 
 namespace MortiseFrame.Rill {
 
-    public static class ClientReceiveDomain {
+    internal static class ClientReceiveDomain {
 
-        public static void Tick_Receive(ClientContext ctx, float dt) {
+        internal static void Tick_Receive(ClientContext ctx, float dt) {
             var client = ctx.Client;
             if (client == null) {
                 return;

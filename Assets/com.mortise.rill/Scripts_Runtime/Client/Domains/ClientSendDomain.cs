@@ -3,9 +3,9 @@ using MortiseFrame.LitIO;
 
 namespace MortiseFrame.Rill {
 
-    public static class ClientSendDomain {
+    internal static class ClientSendDomain {
 
-        public static void Tick_Send(ClientContext ctx, float dt) {
+        internal static void Tick_Send(ClientContext ctx, float dt) {
 
             if (ctx.Client == null) {
                 return;

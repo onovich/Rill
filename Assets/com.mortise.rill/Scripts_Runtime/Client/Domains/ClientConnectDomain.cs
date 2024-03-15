@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace MortiseFrame.Rill {
 
-    public static class ClientConnectDomain {
+    internal static class ClientConnectDomain {
 
-        public static async Task Connect(ClientContext ctx, string remoteIP, int port) {
+        internal static async Task Connect(ClientContext ctx, string remoteIP, int port) {
             try {
                 var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 client.NoDelay = true;
