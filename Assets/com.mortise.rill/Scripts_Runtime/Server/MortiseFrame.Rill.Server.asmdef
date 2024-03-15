@@ -1,7 +1,10 @@
 {
-    "name": "MotiseFrame.Rill.Generic",
+    "name": "MortiseFrame.Rill.Server",
     "rootNamespace": "",
-    "references": [],
+    "references": [
+        "GUID:c0f9232640cc54bd398549d008dadf49",
+        "GUID:2c4b4ba238be84f45af530b10b80fc4a"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
