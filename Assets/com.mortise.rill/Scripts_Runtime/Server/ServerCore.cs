@@ -21,18 +21,16 @@ namespace MortiseFrame.Rill {
 
         // Tick 
         public void Tick(float dt) {
-            ServerReceiveDomain.Tick_Receive(ctx, dt);
-            ServerSendDomain.Tick_Send(ctx, dt);
         }
 
         // Send
-        public void Send(IMessage msg, Socket clientfd) {
-            ctx.Message_Enqueue(msg, clientfd);
+        public void Send(IMessage msg, ClientStateEntity client) {
+            ServerSendDomain.Send(ctx, msg, client);
         }
 
         // Connect
-        public void Bind(IPAddress ip, int port) {
-            ServerConnectDomain.Bind(ctx, ip, port);
+        public void Start(IPAddress ip, int port) {
+            ServerStartDomain.Start(ctx, ip, port);
         }
 
         // On
@@ -47,6 +45,11 @@ namespace MortiseFrame.Rill {
         // Off
         public void Off(IMessage msg, Action<object> listener) {
             ctx.Evt.Off(ctx, msg, listener);
+        }
+
+        // Stop
+        public void Stop() {
+            ServerStopDomain.Stop(ctx);
         }
 
     }

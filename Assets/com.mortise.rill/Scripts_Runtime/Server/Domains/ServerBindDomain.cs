@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MortiseFrame.Rill {
 
-    internal static class ServerConnectDomain {
+    internal static class ServerBindDomain {
 
         internal static void Bind(ServerContext ctx, IPAddress ip, int port) {
             try {

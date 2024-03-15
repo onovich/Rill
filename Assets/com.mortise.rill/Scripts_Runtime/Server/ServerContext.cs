@@ -2,28 +2,34 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 using System;
+using System.Threading;
 
 namespace MortiseFrame.Rill {
 
     internal class ServerContext {
 
-        internal bool isTest;
+        // Listener
+        Socket listener;
+        internal Socket Listener => listener;
 
-        Socket server;
-        internal Socket Server => server;
+        // Thread
+        Thread listenerThread;
+        public Thread ListenerThread => listenerThread;
+        public bool Active => listenerThread != null && listenerThread.IsAlive;
 
+        // Clients
         Dictionary<Socket, ClientStateEntity> clients;
         SortedList<int, Socket> clientOrderList;
 
-        // Message
+        // Message Queue
         Dictionary<Socket, Queue<IMessage>> messageQueue;
 
         // Event
         ServerEventCenter evt;
         internal ServerEventCenter Evt => evt;
 
-        // Protocol
-        BiDictionary<byte, Type> protocolDicts;
+        // Protocol Dict
+        BiDictionary<byte, Type> protocolDict;
 
         // Buffer
         internal byte[] readBuff;
@@ -44,18 +50,18 @@ namespace MortiseFrame.Rill {
         }
 
         internal void Server_Set(Socket socket) {
-            this.server = socket;
+            this.listener = socket;
         }
 
-        // Clientfd
-        public void ClientState_Add(ClientStateEntity clientState) {
-            clients.Add(clientState.clientfd, clientState);
-            clientOrderList.Add(clientState.clientIndex, clientState.clientfd);
+        // Client
+        public void ClientState_Add(ClientStateEntity client) {
+            clients.Add(client.clientfd, client);
+            clientOrderList.Add(client.clientIndex, client.clientfd);
         }
 
-        public void ClientState_Remove(Socket clientfd) {
-            clientOrderList.Remove(clients[clientfd].clientIndex);
-            clients.Remove(clientfd);
+        public void ClientState_Remove(Socket client) {
+            clientOrderList.Remove(clients[client].clientIndex);
+            clients.Remove(client);
         }
 
         public void ClientState_ForEachOrderly(Action<ClientStateEntity> action) {
@@ -65,24 +71,24 @@ namespace MortiseFrame.Rill {
         }
 
         // Message
-        internal void Message_Enqueue(IMessage message, Socket clientfd) {
-            if (!messageQueue.ContainsKey(clientfd)) {
-                messageQueue.Add(clientfd, new Queue<IMessage>());
+        internal void Message_Enqueue(IMessage message, Socket client) {
+            if (!messageQueue.ContainsKey(client)) {
+                messageQueue.Add(client, new Queue<IMessage>());
             }
-            messageQueue[clientfd].Enqueue(message);
+            messageQueue[client].Enqueue(message);
         }
 
-        internal bool Message_TryDequeue(Socket clientfd, out IMessage message) {
-            if (messageQueue.ContainsKey(clientfd) && messageQueue[clientfd].Count > 0) {
-                return messageQueue[clientfd].TryDequeue(out message);
+        internal bool Message_TryDequeue(Socket client, out IMessage message) {
+            if (messageQueue.ContainsKey(client) && messageQueue[client].Count > 0) {
+                return messageQueue[client].TryDequeue(out message);
             }
             message = null;
             return false;
         }
 
-        internal int Message_GetCount(Socket clientfd) {
-            if (messageQueue.ContainsKey(clientfd)) {
-                return messageQueue[clientfd].Count;
+        internal int Message_GetCount(Socket client) {
+            if (messageQueue.ContainsKey(client)) {
+                return messageQueue[client].Count;
             }
             return 0;
         }
@@ -98,14 +104,14 @@ namespace MortiseFrame.Rill {
 
         // Protocol
         internal void RegisterMessage(Type msgType) {
-            if (!protocolDicts.ContainsValue(msgType)) {
+            if (!protocolDict.ContainsValue(msgType)) {
                 var msgId = IDService.PickMsgId();
-                protocolDicts.Add(msgId, msgType);
+                protocolDict.Add(msgId, msgType);
             }
         }
 
         internal object GetMessage(byte id) {
-            var has = protocolDicts.TryGetByKey(id, out Type type);
+            var has = protocolDict.TryGetByKey(id, out Type type);
             if (!has) {
                 throw new ArgumentException("No type found for the given ID.", id.ToString());
             }
@@ -117,7 +123,7 @@ namespace MortiseFrame.Rill {
 
         internal byte GetMessageID(IMessage msg) {
             var type = msg.GetType();
-            var has = protocolDicts.TryGetByValue(type, out byte id);
+            var has = protocolDict.TryGetByValue(type, out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
@@ -125,16 +131,25 @@ namespace MortiseFrame.Rill {
         }
 
         internal byte GetMessageID<T>() {
-            var has = protocolDicts.TryGetByValue(typeof(T), out byte id);
+            var has = protocolDict.TryGetByValue(typeof(T), out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }
             return id;
         }
 
+        // Thread
+        internal void ListenerThread_Clear() {
+            listenerThread = null;
+        }
+
+        internal void ListnerThread_Set(Thread thread) {
+            listenerThread = thread;
+        }
+
         internal void Clear() {
             messageQueue.Clear();
-            protocolDicts.Clear();
+            protocolDict.Clear();
             evt.Clear();
             idService.Reset();
         }

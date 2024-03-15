@@ -1,33 +1,37 @@
+using System;
 using MortiseFrame.LitIO;
 
 namespace MortiseFrame.Rill {
 
     internal static class ServerReceiveDomain {
 
-        internal static void Tick_Receive(ServerContext ctx, float dt) {
-            var client = ctx.Server;
-            if (client == null) {
-                return;
-            }
-            if (!client.Poll(0, System.Net.Sockets.SelectMode.SelectRead)) {
-                return;
-            }
-            byte[] buff = ctx.readBuff;
-            int count = client.Receive(buff);
-            if (count <= 0) {
-                return;
-            }
+        internal static void ThreadTick_Receive(ServerContext ctx, ClientStateEntity client) {
 
-            var offset = 0;
-            while (offset < count) {
-                var len = ByteReader.Read<int>(buff, ref offset);
-                if (len == 0) {
-                    break;
+            try {
+                byte[] buff = ctx.readBuff;
+                int count = client.clientfd.Receive(buff);
+                if (count <= 0) {
+                    return;
                 }
-                ReadMessage(ctx, buff, ref offset);
+
+                var offset = 0;
+                while (offset < count) {
+                    var len = ByteReader.Read<int>(buff, ref offset);
+                    if (len == 0) {
+                        break;
+                    }
+                    ReadMessage(ctx, buff, ref offset);
+                }
+
+                ctx.Buffer_ClearReadBuffer();
+
+            } catch (Exception exception) {
+                RLog.Log(" ReceiveLoop: finished receive function for:" + exception);
+
+            } finally {
+                client.clientfd.Close();
             }
 
-            ctx.Buffer_ClearReadBuffer();
         }
 
         // Read
