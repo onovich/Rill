@@ -7,28 +7,24 @@ namespace MortiseFrame.Rill {
 
     internal static class ServerConnectDomain {
 
-        internal static async Task Connect(ServerContext ctx, string remoteIP, int port) {
+        internal static void Bind(ServerContext ctx, IPAddress ip, int port) {
             try {
-                var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                client.NoDelay = true;
-                IPAddress ipAddress = IPAddress.Parse(remoteIP);
 
-                await Task.Factory.FromAsync(
-                    client.BeginConnect,
-                    client.EndConnect,
-                    new IPEndPoint(ipAddress, port),
-                    null);
+                IPEndPoint localEndPoint = new IPEndPoint(ip, port);
+                var listenfd = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                listenfd.NoDelay = true;
+                listenfd.Bind(localEndPoint);
 
-                ctx.Server_Set(client);
+                listenfd.Listen(0);
+                ctx.Server_Set(listenfd);
 
-            } catch (SocketException e) {
-                var errorMsg = RequestErrorCollection.ErrorMessages[(int)e.SocketErrorCode];
-                RLog.Log($"连接失败: {errorMsg}");
-                ctx.Evt.EmitError(errorMsg);
+                RLog.Log($"Server Has Started On {ip}:{port}.\nWaiting For A Connection...");
+
             } catch (Exception e) {
-                RLog.Error($"异常: {e.ToString()}");
+                RLog.Log(e.ToString());
             }
         }
+
 
     }
 

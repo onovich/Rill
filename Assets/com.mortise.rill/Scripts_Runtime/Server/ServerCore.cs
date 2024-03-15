@@ -31,8 +31,8 @@ namespace MortiseFrame.Rill {
         }
 
         // Connect
-        public async Task Connect(string remoteIP, int port) {
-            await ServerConnectDomain.Connect(ctx, remoteIP, port);
+        public void Bind(IPAddress ip, int port) {
+            ServerConnectDomain.Bind(ctx, ip, port);
         }
 
         // On
