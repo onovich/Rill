@@ -31,22 +31,20 @@ namespace MortiseFrame.Rill {
         // Protocol Dict
         BiDictionary<byte, Type> protocolDict;
 
-        // Buffer
-        internal byte[] readBuff;
-        internal byte[] writeBuff;
-
         // Service
         IDService idService;
         internal IDService IDService => idService;
+
+        // Locker
+        object locker;
 
         internal ServerContext() {
             clients = new Dictionary<Socket, ClientStateEntity>();
             clientOrderList = new SortedList<int, Socket>();
             messageQueue = new Dictionary<Socket, Queue<IMessage>>();
-            readBuff = new byte[4096];
-            writeBuff = new byte[4096];
             evt = new ServerEventCenter();
             idService = new IDService();
+            locker = new object();
         }
 
         internal void Server_Set(Socket socket) {
@@ -72,18 +70,22 @@ namespace MortiseFrame.Rill {
 
         // Message
         internal void Message_Enqueue(IMessage message, Socket client) {
-            if (!messageQueue.ContainsKey(client)) {
-                messageQueue.Add(client, new Queue<IMessage>());
+            lock (locker) {
+                if (!messageQueue.ContainsKey(client)) {
+                    messageQueue.Add(client, new Queue<IMessage>());
+                }
+                messageQueue[client].Enqueue(message);
             }
-            messageQueue[client].Enqueue(message);
         }
 
         internal bool Message_TryDequeue(Socket client, out IMessage message) {
-            if (messageQueue.ContainsKey(client) && messageQueue[client].Count > 0) {
-                return messageQueue[client].TryDequeue(out message);
+            lock (locker) {
+                if (messageQueue.ContainsKey(client) && messageQueue[client].Count > 0) {
+                    return messageQueue[client].TryDequeue(out message);
+                }
+                message = null;
+                return false;
             }
-            message = null;
-            return false;
         }
 
         internal int Message_GetCount(Socket client) {
@@ -91,15 +93,6 @@ namespace MortiseFrame.Rill {
                 return messageQueue[client].Count;
             }
             return 0;
-        }
-
-        // Buffer
-        internal void Buffer_ClearReadBuffer() {
-            Array.Clear(readBuff, 0, readBuff.Length);
-        }
-
-        internal void Buffer_ClearWriteBuffer() {
-            Array.Clear(writeBuff, 0, writeBuff.Length);
         }
 
         // Protocol

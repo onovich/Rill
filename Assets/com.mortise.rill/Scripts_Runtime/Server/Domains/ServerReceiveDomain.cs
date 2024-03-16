@@ -8,7 +8,7 @@ namespace MortiseFrame.Rill {
         internal static void ThreadTick_Receive(ServerContext ctx, ClientStateEntity client) {
 
             try {
-                byte[] buff = ctx.readBuff;
+                byte[] buff = client.Buffer_Get();
                 int count = client.clientfd.Receive(buff);
                 if (count <= 0) {
                     return;
@@ -23,7 +23,7 @@ namespace MortiseFrame.Rill {
                     ReadMessage(ctx, buff, ref offset);
                 }
 
-                ctx.Buffer_ClearReadBuffer();
+                client.Buffer_Clear();
 
             } catch (Exception exception) {
                 RLog.Log(" ReceiveLoop: finished receive function for:" + exception);

@@ -9,7 +9,6 @@ namespace MortiseFrame.Rill {
 
         internal static void Send(ServerContext ctx, IMessage msg, ClientStateEntity client) {
             ctx.Message_Enqueue(msg, client.clientfd);
-            client.sendPending.Set();
         }
 
         internal static void ThreadTick_Send(ServerContext ctx, ClientStateEntity client) {
@@ -25,11 +24,7 @@ namespace MortiseFrame.Rill {
             try {
 
                 while (client.clientfd.Connected) {
-
-                    client.sendPending.Reset();
                     DequeueAndSerializeAll(ctx, client);
-                    client.sendPending.WaitOne();
-
                 }
 
             } catch (ThreadAbortException) {
@@ -49,7 +44,7 @@ namespace MortiseFrame.Rill {
                     continue;
                 }
 
-                byte[] buff = ctx.writeBuff;
+                byte[] buff = client.Buffer_Get();
                 int offset = 0;
 
                 var src = message.ToBytes();
@@ -70,7 +65,7 @@ namespace MortiseFrame.Rill {
                 }
 
                 client.clientfd.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
-                ctx.Buffer_ClearWriteBuffer();
+                client.Buffer_Clear();
             }
         }
 
