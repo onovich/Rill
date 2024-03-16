@@ -1,22 +1,48 @@
 using System;
+using System.Threading;
 using MortiseFrame.LitIO;
 
 namespace MortiseFrame.Rill {
 
     internal static class ClientSendDomain {
 
-        internal static void Tick_Send(ClientContext ctx, float dt) {
+        // Enqueue
+        internal static void Enqueue(ClientContext ctx, IMessage msg) {
+            ctx.Message_Enqueue(msg);
+        }
+
+        // Send
+        internal static void ThreadTick_Send(ClientContext ctx) {
 
             if (ctx.Client == null) {
                 return;
             }
 
+            try {
+
+                while (ctx.Client.Connected) {
+                    SerializeAll(ctx);
+                }
+
+            } catch (ThreadAbortException) {
+            } catch (ThreadInterruptedException) {
+            } catch (Exception exception) {
+                RLog.Log("SendLoop Exception: " + exception);
+            } finally {
+                ctx.Client.Close();
+            }
+
+        }
+
+        // Serialize
+        static void SerializeAll(ClientContext ctx) {
             while (ctx.Message_TryDequeue(out IMessage message)) {
+
                 if (message == null) {
                     continue;
                 }
 
-                byte[] buff = ctx.writeBuff;
+                byte[] buff = ctx.Buffer_Get();
                 int offset = 0;
 
                 var src = message.ToBytes();
@@ -36,13 +62,9 @@ namespace MortiseFrame.Rill {
                     return;
                 }
 
-                var client = ctx.Client;
-                client.Send(buff, offset, System.Net.Sockets.SocketFlags.None);
-
-                ctx.Buffer_ClearWriteBuffer();
-
+                ctx.Client.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
+                ctx.Buffer_Clear();
             }
-
         }
 
     }

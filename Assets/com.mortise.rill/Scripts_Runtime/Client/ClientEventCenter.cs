@@ -7,6 +7,7 @@ namespace MortiseFrame.Rill {
 
         readonly Dictionary<int, List<Action<object>>> eventsDict;
         readonly List<Action<string>> errorEvent;
+        readonly List<Action> connectEvent;
 
         internal ClientEventCenter() {
             eventsDict = new Dictionary<int, List<Action<object>>>();
@@ -26,11 +27,23 @@ namespace MortiseFrame.Rill {
             errorEvent.Add(listener);
         }
 
+        internal void OnConnect(ClientContext ctx, Action listener) {
+            connectEvent.Add(listener);
+        }
+
         internal void Off(ClientContext ctx, IMessage msg, Action<object> listener) {
             var msgId = ctx.GetMessageID(msg);
             if (eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId].Remove(listener);
             }
+        }
+
+        internal void OffError(ClientContext ctx, Action<string> listener) {
+            errorEvent.Remove(listener);
+        }
+
+        internal void OffConnect(ClientContext ctx, Action listener) {
+            connectEvent.Remove(listener);
         }
 
         internal void Emit(int msgId, IMessage msg) {
@@ -47,9 +60,16 @@ namespace MortiseFrame.Rill {
             }
         }
 
+        internal void EmitConnect() {
+            foreach (var listener in connectEvent) {
+                listener?.Invoke();
+            }
+        }
+
         internal void Clear() {
             eventsDict.Clear();
             errorEvent.Clear();
+            connectEvent.Clear();
         }
 
     }

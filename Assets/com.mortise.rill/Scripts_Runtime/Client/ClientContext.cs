@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Collections.Concurrent;
 using System;
+using System.Threading;
 
 namespace MortiseFrame.Rill {
 
@@ -12,8 +13,22 @@ namespace MortiseFrame.Rill {
         Socket client;
         internal Socket Client => client;
 
-        // Message
+        // State
+        volatile bool connecting;
+        public bool Connecting => connecting;
+
+        public bool Connected => client != null &&
+                                 client.Connected;
+
+        // Thread
+        Thread receiveThread;
+        public Thread ReceiveThread => receiveThread;
+
+        // Message Queue
         Queue<IMessage> messageQueue;
+
+        // Reveive Date Queue
+        Queue<byte[]> receiveDataQueue;
 
         // Event
         ClientEventCenter evt;
@@ -23,45 +38,57 @@ namespace MortiseFrame.Rill {
         BiDictionary<byte, Type> protocolDicts;
 
         // Buffer
-        internal byte[] readBuff;
-        internal byte[] writeBuff;
+        byte[] buffer;
 
         // Service
         IDService idService;
         internal IDService IDService => idService;
 
+        // Locker
+        object locker;
+
         internal ClientContext() {
             messageQueue = new Queue<IMessage>();
-            readBuff = new byte[4096];
-            writeBuff = new byte[4096];
+            buffer = new byte[4096];
             evt = new ClientEventCenter();
             idService = new IDService();
+            receiveDataQueue = new Queue<byte[]>();
+            locker = new object();
         }
 
         internal void Client_Set(Socket socket) {
             this.client = socket;
         }
 
+        // State
+        internal void Connecting_Set(bool value) {
+            connecting = value;
+        }
+
         // Message
         internal void Message_Enqueue(IMessage message) {
-            messageQueue.Enqueue(message);
+            lock (locker) {
+                messageQueue.Enqueue(message);
+            }
         }
 
         internal bool Message_TryDequeue(out IMessage message) {
-            return messageQueue.TryDequeue(out message);
-        }
-
-        internal int Message_GetCount() {
-            return messageQueue.Count;
+            lock (locker) {
+                return messageQueue.TryDequeue(out message);
+            }
         }
 
         // Buffer
-        internal void Buffer_ClearReadBuffer() {
-            Array.Clear(readBuff, 0, readBuff.Length);
+        internal void Buffer_Clear() {
+            lock (locker) {
+                Array.Clear(buffer, 0, buffer.Length);
+            }
         }
 
-        internal void Buffer_ClearWriteBuffer() {
-            Array.Clear(writeBuff, 0, writeBuff.Length);
+        internal byte[] Buffer_Get() {
+            lock (locker) {
+                return buffer;
+            }
         }
 
         // Protocol
@@ -98,6 +125,19 @@ namespace MortiseFrame.Rill {
                 throw new ArgumentException("ID Not Found");
             }
             return id;
+        }
+
+        // Receive Data Queue
+        internal void ReceiveData_Enqueue(byte[] data) {
+            lock (locker) {
+                receiveDataQueue.Enqueue(data);
+            }
+        }
+
+        internal bool ReceiveDate_TryDequeue(out byte[] data) {
+            lock (locker) {
+                return receiveDataQueue.TryDequeue(out data);
+            }
         }
 
         internal void Clear() {

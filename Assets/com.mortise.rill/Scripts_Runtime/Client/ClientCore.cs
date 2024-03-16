@@ -21,8 +21,7 @@ namespace MortiseFrame.Rill {
 
         // Tick 
         public void Tick(float dt) {
-            ClientReceiveDomain.Tick_Receive(ctx, dt);
-            ClientSendDomain.Tick_Send(ctx, dt);
+            ClientReceiveDomain.Tick_DeserializeAll(ctx);
         }
 
         // Send
@@ -31,8 +30,8 @@ namespace MortiseFrame.Rill {
         }
 
         // Connect
-        public async Task Connect(string remoteIP, int port) {
-            await ClientConnectDomain.Connect(ctx, remoteIP, port);
+        public void Connect(string remoteIP, int port) {
+            ClientConnectDomain.Connect(ctx, remoteIP, port);
         }
 
         // On
@@ -44,9 +43,26 @@ namespace MortiseFrame.Rill {
             ctx.Evt.OnError(ctx, listener);
         }
 
+        public void OnConnect(Action listener) {
+            ctx.Evt.OnConnect(ctx, listener);
+        }
+
         // Off
         public void Off(IMessage msg, Action<object> listener) {
             ctx.Evt.Off(ctx, msg, listener);
+        }
+
+        public void OffError(Action<string> listener) {
+            ctx.Evt.OffError(ctx, listener);
+        }
+
+        public void OffConnect(Action listener) {
+            ctx.Evt.OffConnect(ctx, listener);
+        }
+
+        // Stop
+        public void Stop() {
+            ClientStopDomain.Stop(ctx);
         }
 
     }

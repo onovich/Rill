@@ -61,8 +61,6 @@ namespace MortiseFrame.Rill {
 
             });
 
-
-
         }
 
     }
