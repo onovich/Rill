@@ -21,11 +21,12 @@ namespace MortiseFrame.Rill {
 
         // Tick 
         public void Tick(float dt) {
+            ServerReceiveDomain.Tick_DeserializeAll(ctx);
         }
 
         // Send
-        public void Send(IMessage msg, ClientStateEntity client) {
-            ServerSendDomain.Send(ctx, msg, client);
+        public void Send(IMessage msg, ConnectionEntity client) {
+            ServerSendDomain.Enqueue(ctx, msg, client);
         }
 
         // Connect

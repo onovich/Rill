@@ -12,7 +12,7 @@ namespace MortiseFrame.Rill {
             if (ctx.Active) return;
 
             RLog.Log("[] Server: Start port = " + port);
-            var listenerThread = new Thread(() => { Listen(ctx, ip, port); });
+            var listenerThread = new Thread(() => { Bind(ctx, ip, port); });
             listenerThread.IsBackground = true;
             listenerThread.Priority = ThreadPriority.BelowNormal;
             listenerThread.Start();
@@ -20,7 +20,7 @@ namespace MortiseFrame.Rill {
             ctx.ListnerThread_Set(listenerThread);
         }
 
-        static void Listen(ServerContext ctx, IPAddress ip, int port) {
+        static void Bind(ServerContext ctx, IPAddress ip, int port) {
             try {
 
                 IPEndPoint localEndPoint = new IPEndPoint(ip, port);
@@ -42,8 +42,8 @@ namespace MortiseFrame.Rill {
                     clientfd.ReceiveTimeout = CommonConst.ReceiveTimeout;
 
                     int clientIndex = ctx.IDService.PickClientIndex();
-                    var client = new ClientStateEntity(clientfd, clientIndex);
-                    ctx.ClientState_Add(client);
+                    var client = new ConnectionEntity(clientfd, clientIndex);
+                    ctx.Connection_Add(client);
 
                     Thread sendThread = new Thread(() => {
                         try {

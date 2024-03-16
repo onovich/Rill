@@ -7,24 +7,26 @@ namespace MortiseFrame.Rill {
 
     internal static class ServerSendDomain {
 
-        internal static void Send(ServerContext ctx, IMessage msg, ClientStateEntity client) {
-            ctx.Message_Enqueue(msg, client.clientfd);
+        // Enqueue
+        internal static void Enqueue(ServerContext ctx, IMessage msg, ConnectionEntity connection) {
+            connection.Message_Enqueue(msg);
         }
 
-        internal static void ThreadTick_Send(ServerContext ctx, ClientStateEntity client) {
+        // Send
+        internal static void ThreadTick_Send(ServerContext ctx, ConnectionEntity connection) {
 
             if (ctx.Listener == null) {
                 return;
             }
 
-            if (client == null) {
+            if (connection == null) {
                 return;
             }
 
             try {
 
-                while (client.clientfd.Connected) {
-                    DequeueAndSerializeAll(ctx, client);
+                while (connection.clientfd.Connected) {
+                    SerializeAll(ctx, connection);
                 }
 
             } catch (ThreadAbortException) {
@@ -32,19 +34,20 @@ namespace MortiseFrame.Rill {
             } catch (Exception exception) {
                 RLog.Log("SendLoop Exception: " + exception);
             } finally {
-                client.clientfd.Close();
+                connection.clientfd.Close();
             }
 
         }
 
-        static void DequeueAndSerializeAll(ServerContext ctx, ClientStateEntity client) {
-            while (ctx.Message_TryDequeue(client.clientfd, out IMessage message)) {
+        // Serialize
+        static void SerializeAll(ServerContext ctx, ConnectionEntity connection) {
+            while (connection.Message_TryDequeue(out IMessage message)) {
 
                 if (message == null) {
                     continue;
                 }
 
-                byte[] buff = client.Buffer_Get();
+                byte[] buff = connection.Buffer_Get();
                 int offset = 0;
 
                 var src = message.ToBytes();
@@ -64,8 +67,8 @@ namespace MortiseFrame.Rill {
                     return;
                 }
 
-                client.clientfd.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
-                client.Buffer_Clear();
+                connection.clientfd.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
+                connection.Buffer_Clear();
             }
         }
 

@@ -18,11 +18,8 @@ namespace MortiseFrame.Rill {
         public bool Active => listenerThread != null && listenerThread.IsAlive;
 
         // Clients
-        Dictionary<Socket, ClientStateEntity> clients;
+        Dictionary<Socket, ConnectionEntity> clients;
         SortedList<int, Socket> clientOrderList;
-
-        // Message Queue
-        Dictionary<Socket, Queue<IMessage>> messageQueue;
 
         // Event
         ServerEventCenter evt;
@@ -39,9 +36,8 @@ namespace MortiseFrame.Rill {
         object locker;
 
         internal ServerContext() {
-            clients = new Dictionary<Socket, ClientStateEntity>();
+            clients = new Dictionary<Socket, ConnectionEntity>();
             clientOrderList = new SortedList<int, Socket>();
-            messageQueue = new Dictionary<Socket, Queue<IMessage>>();
             evt = new ServerEventCenter();
             idService = new IDService();
             locker = new object();
@@ -52,47 +48,20 @@ namespace MortiseFrame.Rill {
         }
 
         // Client
-        public void ClientState_Add(ClientStateEntity client) {
-            clients.Add(client.clientfd, client);
-            clientOrderList.Add(client.clientIndex, client.clientfd);
+        public void Connection_Add(ConnectionEntity connection) {
+            clients.Add(connection.clientfd, connection);
+            clientOrderList.Add(connection.clientIndex, connection.clientfd);
         }
 
-        public void ClientState_Remove(Socket client) {
+        public void Connection_Remove(Socket client) {
             clientOrderList.Remove(clients[client].clientIndex);
             clients.Remove(client);
         }
 
-        public void ClientState_ForEachOrderly(Action<ClientStateEntity> action) {
+        public void Connection_ForEachOrderly(Action<ConnectionEntity> action) {
             for (int i = 0; i < clientOrderList.Count; i++) {
                 action(clients[clientOrderList.Values[i]]);
             }
-        }
-
-        // Message
-        internal void Message_Enqueue(IMessage message, Socket client) {
-            lock (locker) {
-                if (!messageQueue.ContainsKey(client)) {
-                    messageQueue.Add(client, new Queue<IMessage>());
-                }
-                messageQueue[client].Enqueue(message);
-            }
-        }
-
-        internal bool Message_TryDequeue(Socket client, out IMessage message) {
-            lock (locker) {
-                if (messageQueue.ContainsKey(client) && messageQueue[client].Count > 0) {
-                    return messageQueue[client].TryDequeue(out message);
-                }
-                message = null;
-                return false;
-            }
-        }
-
-        internal int Message_GetCount(Socket client) {
-            if (messageQueue.ContainsKey(client)) {
-                return messageQueue[client].Count;
-            }
-            return 0;
         }
 
         // Protocol
@@ -141,7 +110,6 @@ namespace MortiseFrame.Rill {
         }
 
         internal void Clear() {
-            messageQueue.Clear();
             protocolDict.Clear();
             evt.Clear();
             idService.Reset();

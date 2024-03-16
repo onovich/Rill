@@ -13,8 +13,8 @@ namespace MortiseFrame.Rill {
             ctx.ListenerThread?.Interrupt();
             ctx.ListenerThread_Clear();
 
-            ctx.ClientState_ForEachOrderly((client) => {
-                try { client.clientfd.Close(); } catch { }
+            ctx.Connection_ForEachOrderly((connection) => {
+                try { connection.clientfd.Close(); } catch { }
             });
 
             ctx.Clear();
