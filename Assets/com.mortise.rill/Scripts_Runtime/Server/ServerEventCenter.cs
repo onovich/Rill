@@ -5,18 +5,18 @@ namespace MortiseFrame.Rill {
 
     internal class ServerEventCenter {
 
-        readonly Dictionary<int, List<Action<IMessage>>> eventsDict;
+        readonly Dictionary<int, List<Action<IMessage, ConnectionEntity>>> eventsDict;
         readonly List<Action<string>> errorEvent;
 
         internal ServerEventCenter() {
-            eventsDict = new Dictionary<int, List<Action<IMessage>>>();
+            eventsDict = new Dictionary<int, List<Action<IMessage, ConnectionEntity>>>();
             errorEvent = new List<Action<string>>();
         }
 
-        internal void On<T>(ServerContext ctx, Action<IMessage> listener) where T : IMessage {
+        internal void On<T>(ServerContext ctx, Action<IMessage, ConnectionEntity> listener) where T : IMessage {
             var msgId = ctx.GetMessageID<T>();
             if (!eventsDict.ContainsKey(msgId)) {
-                eventsDict[msgId] = new List<Action<IMessage>>();
+                eventsDict[msgId] = new List<Action<IMessage, ConnectionEntity>>();
             }
 
             eventsDict[msgId].Add(listener);
@@ -26,17 +26,17 @@ namespace MortiseFrame.Rill {
             errorEvent.Add(listener);
         }
 
-        internal void Off<T>(ServerContext ctx, Action<IMessage> listener) where T : IMessage {
+        internal void Off<T>(ServerContext ctx, Action<IMessage, ConnectionEntity> listener) where T : IMessage {
             var msgId = ctx.GetMessageID<T>();
             if (eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId].Remove(listener);
             }
         }
 
-        internal void Emit(int msgId, IMessage msg) {
+        internal void Emit(int msgId, IMessage msg, ConnectionEntity conn) {
             if (eventsDict.ContainsKey(msgId)) {
                 foreach (var listener in eventsDict[msgId]) {
-                    listener?.Invoke(msg);
+                    listener?.Invoke(msg, conn);
                 }
             }
         }

@@ -35,7 +35,7 @@ namespace MortiseFrame.Rill {
         }
 
         // On
-        public void On<T>(Action<IMessage> listener) where T : IMessage {
+        public void On<T>(Action<IMessage, ConnectionEntity> listener) where T : IMessage {
             ctx.Evt.On<T>(ctx, listener);
         }
 
@@ -44,7 +44,7 @@ namespace MortiseFrame.Rill {
         }
 
         // Off
-        public void Off<T>(Action<object> listener) where T : IMessage {
+        public void Off<T>(Action<IMessage, ConnectionEntity> listener) where T : IMessage {
             ctx.Evt.Off<T>(ctx, listener);
         }
 
