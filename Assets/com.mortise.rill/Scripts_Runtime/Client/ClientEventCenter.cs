@@ -5,19 +5,19 @@ namespace MortiseFrame.Rill {
 
     internal class ClientEventCenter {
 
-        readonly Dictionary<int, List<Action<object>>> eventsDict;
+        readonly Dictionary<int, List<Action<IMessage>>> eventsDict;
         readonly List<Action<string>> errorEvent;
         readonly List<Action> connectEvent;
 
         internal ClientEventCenter() {
-            eventsDict = new Dictionary<int, List<Action<object>>>();
+            eventsDict = new Dictionary<int, List<Action<IMessage>>>();
             errorEvent = new List<Action<string>>();
         }
 
-        internal void On(ClientContext ctx, Type type, Action<object> listener) {
-            var msgId = ctx.GetMessageID(type);
+        internal void On<T>(ClientContext ctx, Action<IMessage> listener) where T : IMessage {
+            var msgId = ctx.GetMessageID<T>();
             if (!eventsDict.ContainsKey(msgId)) {
-                eventsDict[msgId] = new List<Action<object>>();
+                eventsDict[msgId] = new List<Action<IMessage>>();
             }
 
             eventsDict[msgId].Add(listener);
