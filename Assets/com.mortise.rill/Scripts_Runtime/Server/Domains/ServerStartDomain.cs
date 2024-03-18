@@ -45,6 +45,8 @@ namespace MortiseFrame.Rill {
                     var client = new ConnectionEntity(clientfd, clientIndex);
                     ctx.Connection_Add(client);
 
+                    ctx.Evt.EmitConnect(client);
+
                     Thread sendThread = new Thread(() => {
                         try {
                             ServerSendDomain.ThreadTick_Send(ctx, client);
