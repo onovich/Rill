@@ -48,8 +48,8 @@ namespace MortiseFrame.Rill {
         }
 
         // Off
-        public void Off(Type msgType, Action<object> listener) {
-            ctx.Evt.Off(ctx, msgType, listener);
+        public void Off<T>(Action<object> listener) where T : IMessage {
+            ctx.Evt.Off<T>(ctx, listener);
         }
 
         public void OffError(Action<string> listener) {

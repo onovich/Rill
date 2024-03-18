@@ -5,18 +5,18 @@ namespace MortiseFrame.Rill {
 
     internal class ServerEventCenter {
 
-        readonly Dictionary<int, List<Action<object>>> eventsDict;
+        readonly Dictionary<int, List<Action<IMessage>>> eventsDict;
         readonly List<Action<string>> errorEvent;
 
         internal ServerEventCenter() {
-            eventsDict = new Dictionary<int, List<Action<object>>>();
+            eventsDict = new Dictionary<int, List<Action<IMessage>>>();
             errorEvent = new List<Action<string>>();
         }
 
-        internal void On(ServerContext ctx, Type msgType, Action<object> listener) {
-            var msgId = ctx.GetMessageID(msgType);
+        internal void On<T>(ServerContext ctx, Action<IMessage> listener) where T : IMessage {
+            var msgId = ctx.GetMessageID<T>();
             if (!eventsDict.ContainsKey(msgId)) {
-                eventsDict[msgId] = new List<Action<object>>();
+                eventsDict[msgId] = new List<Action<IMessage>>();
             }
 
             eventsDict[msgId].Add(listener);
@@ -26,8 +26,8 @@ namespace MortiseFrame.Rill {
             errorEvent.Add(listener);
         }
 
-        internal void Off(ServerContext ctx, Type msgType, Action<object> listener) {
-            var msgId = ctx.GetMessageID(msgType);
+        internal void Off<T>(ServerContext ctx, Action<IMessage> listener) where T : IMessage {
+            var msgId = ctx.GetMessageID<T>();
             if (eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId].Remove(listener);
             }
