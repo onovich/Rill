@@ -39,13 +39,25 @@ namespace MortiseFrame.Rill {
             ctx.Evt.On<T>(ctx, listener);
         }
 
-        public void OnError(Action<string> listener) {
+        public void OnError(Action<string, ConnectionEntity> listener) {
             ctx.Evt.OnError(ctx, listener);
+        }
+
+        public void OnConnect(Action<ConnectionEntity> listener) {
+            ctx.Evt.OnConnect(ctx, listener);
         }
 
         // Off
         public void Off<T>(Action<IMessage, ConnectionEntity> listener) where T : IMessage {
             ctx.Evt.Off<T>(ctx, listener);
+        }
+
+        public void OffError(Action<string, ConnectionEntity> listener) {
+            ctx.Evt.OffError(ctx, listener);
+        }
+
+        public void OffConnect(Action<ConnectionEntity> listener) {
+            ctx.Evt.OffConnect(ctx, listener);
         }
 
         // Stop
