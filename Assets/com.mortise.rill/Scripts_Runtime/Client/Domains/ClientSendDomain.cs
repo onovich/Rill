@@ -51,7 +51,7 @@ namespace MortiseFrame.Rill {
                 }
 
                 int len = src.Length + 5;
-                byte msgID = ctx.GetMessageID(message);
+                byte msgID = ctx.GetMessageID(message.GetType());
 
                 ByteWriter.Write<int>(buff, len, ref offset);
                 ByteWriter.Write<byte>(buff, msgID, ref offset);
