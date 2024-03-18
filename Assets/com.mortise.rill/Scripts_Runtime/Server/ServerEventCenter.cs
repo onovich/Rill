@@ -13,8 +13,8 @@ namespace MortiseFrame.Rill {
             errorEvent = new List<Action<string>>();
         }
 
-        internal void On(ServerContext ctx, IMessage msg, Action<object> listener) {
-            var msgId = ctx.GetMessageID(msg);
+        internal void On(ServerContext ctx, Type msgType, Action<object> listener) {
+            var msgId = ctx.GetMessageID(msgType);
             if (!eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId] = new List<Action<object>>();
             }
@@ -26,8 +26,8 @@ namespace MortiseFrame.Rill {
             errorEvent.Add(listener);
         }
 
-        internal void Off(ServerContext ctx, IMessage msg, Action<object> listener) {
-            var msgId = ctx.GetMessageID(msg);
+        internal void Off(ServerContext ctx, Type msgType, Action<object> listener) {
+            var msgId = ctx.GetMessageID(msgType);
             if (eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId].Remove(listener);
             }

@@ -83,9 +83,8 @@ namespace MortiseFrame.Rill {
             return Activator.CreateInstance(type);
         }
 
-        internal byte GetMessageID(IMessage msg) {
-            var type = msg.GetType();
-            var has = protocolDict.TryGetByValue(type, out byte id);
+        internal byte GetMessageID(Type msgType) {
+            var has = protocolDict.TryGetByValue(msgType, out byte id);
             if (!has) {
                 throw new ArgumentException("ID Not Found");
             }

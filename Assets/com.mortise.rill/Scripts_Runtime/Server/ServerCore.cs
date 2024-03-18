@@ -35,8 +35,8 @@ namespace MortiseFrame.Rill {
         }
 
         // On
-        public void On(IMessage msg, Action<object> listener) {
-            ctx.Evt.On(ctx, msg, listener);
+        public void On(Type msgType, Action<object> listener) {
+            ctx.Evt.On(ctx, msgType, listener);
         }
 
         public void OnError(Action<string> listener) {
@@ -44,8 +44,8 @@ namespace MortiseFrame.Rill {
         }
 
         // Off
-        public void Off(IMessage msg, Action<object> listener) {
-            ctx.Evt.Off(ctx, msg, listener);
+        public void Off(Type msgType, Action<object> listener) {
+            ctx.Evt.Off(ctx, msgType, listener);
         }
 
         // Stop

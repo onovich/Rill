@@ -31,8 +31,8 @@ namespace MortiseFrame.Rill {
             connectEvent.Add(listener);
         }
 
-        internal void Off(ClientContext ctx, IMessage msg, Action<object> listener) {
-            var msgId = ctx.GetMessageID(msg.GetType());
+        internal void Off(ClientContext ctx, Type msgType, Action<object> listener) {
+            var msgId = ctx.GetMessageID(msgType);
             if (eventsDict.ContainsKey(msgId)) {
                 eventsDict[msgId].Remove(listener);
             }
