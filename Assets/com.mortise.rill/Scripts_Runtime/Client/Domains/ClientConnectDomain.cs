@@ -14,7 +14,6 @@ namespace MortiseFrame.Rill {
             }
 
             ctx.Connecting_Set(true);
-            RLog.Log("Client Connecting To IP = " + remoteIP + " PORT = " + port);
 
             var receiveThread = new Thread(() => {
                 Listen(ctx, remoteIP, port);

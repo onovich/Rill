@@ -9,6 +9,7 @@ namespace MortiseFrame.Rill {
         // Enqueue
         internal static void Enqueue(ClientContext ctx, IMessage msg) {
             ctx.Message_Enqueue(msg);
+            RLog.Log("Client Enqueued: " + msg.GetType());
         }
 
         // Send
@@ -21,7 +22,7 @@ namespace MortiseFrame.Rill {
             try {
 
                 while (ctx.Client.Connected) {
-                    SerializeAll(ctx);
+                    SerializeAllAndSend(ctx);
                 }
 
             } catch (ThreadAbortException) {
@@ -35,7 +36,7 @@ namespace MortiseFrame.Rill {
         }
 
         // Serialize
-        static void SerializeAll(ClientContext ctx) {
+        static void SerializeAllAndSend(ClientContext ctx) {
             while (ctx.Message_TryDequeue(out IMessage message)) {
 
                 if (message == null) {
@@ -63,6 +64,7 @@ namespace MortiseFrame.Rill {
                 }
 
                 ctx.Client.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
+                RLog.Log("Client Sent: " + message.GetType());
                 ctx.Buffer_Clear();
             }
         }
