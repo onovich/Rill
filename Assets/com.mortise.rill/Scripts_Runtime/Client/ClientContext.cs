@@ -54,6 +54,7 @@ namespace MortiseFrame.Rill {
             idService = new IDService();
             receiveDataQueue = new Queue<byte[]>();
             locker = new object();
+            protocolDicts = new BiDictionary<byte, Type>();
         }
 
         internal void Client_Set(Socket socket) {

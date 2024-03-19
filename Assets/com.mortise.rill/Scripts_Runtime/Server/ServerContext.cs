@@ -41,6 +41,7 @@ namespace MortiseFrame.Rill {
             evt = new ServerEventCenter();
             idService = new IDService();
             locker = new object();
+            protocolDict = new BiDictionary<byte, Type>();
         }
 
         internal void Server_Set(Socket socket) {
