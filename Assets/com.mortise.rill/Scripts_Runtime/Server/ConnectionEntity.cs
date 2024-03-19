@@ -1,14 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace MortiseFrame.Rill {
 
     public class ConnectionEntity {
+
         internal Socket clientfd;
         internal int clientIndex;
+
+        // Buffer
         byte[] buffer;
+
+        // Locker
         object locker;
+        ManualResetEvent sendPending;
 
         Queue<IMessage> messageQueue;
         Queue<byte[]> receiveDataQueue;
@@ -20,6 +27,7 @@ namespace MortiseFrame.Rill {
             locker = new object();
             messageQueue = new Queue<IMessage>();
             receiveDataQueue = new Queue<byte[]>();
+            sendPending = new ManualResetEvent(false);
         }
 
         // Buffer
@@ -59,6 +67,19 @@ namespace MortiseFrame.Rill {
             lock (locker) {
                 return receiveDataQueue.TryDequeue(out data);
             }
+        }
+
+        // Pending
+        internal void SendPending_Set() {
+            sendPending.Set();
+        }
+
+        internal void SendPending_Reset() {
+            sendPending.Reset();
+        }
+
+        internal void SendPending_WaitOne() {
+            sendPending.WaitOne();
         }
 
     }

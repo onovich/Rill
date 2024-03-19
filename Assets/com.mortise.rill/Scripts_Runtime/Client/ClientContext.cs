@@ -44,6 +44,7 @@ namespace MortiseFrame.Rill {
 
         // Locker
         object locker;
+        ManualResetEvent sendPending;
 
         internal ClientContext() {
             messageQueue = new Queue<IMessage>();
@@ -53,6 +54,7 @@ namespace MortiseFrame.Rill {
             receiveDataQueue = new Queue<byte[]>();
             locker = new object();
             protocolDicts = new BiDictionary<byte, Type>();
+            sendPending = new ManualResetEvent(false);
         }
 
         internal void Client_Set(Socket socket) {
@@ -141,6 +143,19 @@ namespace MortiseFrame.Rill {
         // Thread
         internal void ReceiveThread_Set(Thread thread) {
             receiveThread = thread;
+        }
+
+        // Pending
+        internal void SendPending_Set() {
+            sendPending.Set();
+        }
+
+        internal void SendPending_Reset() {
+            sendPending.Reset();
+        }
+
+        internal void SendPending_WaitOne() {
+            sendPending.WaitOne();
         }
 
         internal void Clear() {
