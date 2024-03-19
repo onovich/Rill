@@ -14,7 +14,13 @@ namespace MortiseFrame.Rill {
                 return;
             }
 
+            var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            ctx.Client_Set(client);
+
             ctx.Connecting_Set(true);
+
+            RLog.Log("Client connecting to ip=" + remoteIP + " port=" + port);
+
             var receiveThread = new Thread(() => {
                 Accept(ctx, remoteIP, port);
             });
@@ -29,13 +35,13 @@ namespace MortiseFrame.Rill {
 
             try {
 
-                var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                ctx.Client_Set(client);
-
+                var client = ctx.Client;
                 IPAddress ipAddress = IPAddress.Parse(remoteIP);
                 IPEndPoint ep = new IPEndPoint(ipAddress, port);
                 client.Connect(ep);
                 ctx.Connecting_Set(false);
+
+                RLog.Log("Client connected to ip=" + remoteIP + " port=" + port);
 
                 client.NoDelay = CommonConst.NoDelay;
                 client.SendTimeout = CommonConst.SendTimeout;
