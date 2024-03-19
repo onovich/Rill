@@ -29,13 +29,10 @@ namespace MortiseFrame.Rill {
                 }
 
             } catch (ThreadAbortException) {
-                RLog.Log("[Test] SendLoop ThreadAbortException");
             } catch (ThreadInterruptedException) {
-                RLog.Log("[Test] SendLoop ThreadInterruptedException");
             } catch (Exception exception) {
                 RLog.Log("SendLoop Exception: " + exception);
             } finally {
-                RLog.Log("[Test] SendLoop Finally");
                 ctx.Client.Close();
             }
 

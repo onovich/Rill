@@ -14,7 +14,6 @@ namespace MortiseFrame.Rill {
                     var client = ctx.Client;
                     int count = client.Receive(buff);
                     if (count <= 0) {
-                        RLog.Log("[Test] ReceiveLoop: count <= 0");
                         break;
                     }
 
@@ -29,7 +28,6 @@ namespace MortiseFrame.Rill {
                 RLog.Log(" ReceiveLoop: finished receive function for:" + exception);
             } finally {
                 ctx.Client.Close();
-                RLog.Log("[Test] ReceiveLoop: finished receive function");
                 ctx.Evt.EmitDisconnect();
             }
 

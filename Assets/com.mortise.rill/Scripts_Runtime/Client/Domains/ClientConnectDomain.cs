@@ -58,11 +58,8 @@ namespace MortiseFrame.Rill {
                 RLog.Log("Client Recv: failed to connect to ip=" + remoteIP + " port=" + port + " reason=" + exception);
                 ctx.Evt.EmitDisconnect();
             } catch (ThreadInterruptedException) {
-                RLog.Log("[Test] ReceiveLoop ThreadInterruptedException");
             } catch (ThreadAbortException) {
-                RLog.Log("[Test] ReceiveLoop ThreadAbortException");
             } catch (ObjectDisposedException) {
-                RLog.Log("[Test] ReceiveLoop ObjectDisposedException");
             } catch (Exception exception) {
                 RLog.Error("Client Recv Exception: " + exception);
             }
@@ -70,7 +67,6 @@ namespace MortiseFrame.Rill {
             sendThread?.Interrupt();
             ctx.Connecting_Set(false);
             ctx.Client?.Close();
-            RLog.Log("[Test] ReceiveLoop Finally");
         }
 
     }
