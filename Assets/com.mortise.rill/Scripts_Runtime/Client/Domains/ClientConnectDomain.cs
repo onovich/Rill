@@ -42,6 +42,7 @@ namespace MortiseFrame.Rill {
 
                 client.Connect(ep);
                 ctx.Connecting_Set(false);
+                ctx.Evt.EmitConnect();
 
                 RLog.Log("Client Is Connected to IP = " + remoteIP + " PORT = " + port);
 
@@ -51,7 +52,6 @@ namespace MortiseFrame.Rill {
                 sendThread.IsBackground = true;
                 sendThread.Start();
 
-                ctx.Evt.EmitConnect();
                 ClientReceiveDomain.ThreadTick_Receive(ctx);
 
             } catch (SocketException exception) {
