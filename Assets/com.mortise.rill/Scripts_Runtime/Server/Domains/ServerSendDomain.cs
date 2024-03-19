@@ -10,7 +10,7 @@ namespace MortiseFrame.Rill {
         // Enqueue
         internal static void Enqueue(ServerContext ctx, IMessage msg, ConnectionEntity connection) {
             connection.Message_Enqueue(msg);
-            connection.SendPending_Reset();
+            connection.SendPending_Set();
         }
 
         // Send
