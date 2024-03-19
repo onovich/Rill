@@ -26,10 +26,13 @@ namespace MortiseFrame.Rill {
                 }
 
             } catch (ThreadAbortException) {
+                RLog.Log("[Test] SendLoop ThreadAbortException");
             } catch (ThreadInterruptedException) {
+                RLog.Log("[Test] SendLoop ThreadInterruptedException");
             } catch (Exception exception) {
                 RLog.Log("SendLoop Exception: " + exception);
             } finally {
+                RLog.Log("[Test] SendLoop Finally");
                 ctx.Client.Close();
             }
 
@@ -62,7 +65,6 @@ namespace MortiseFrame.Rill {
                 if (offset == 0) {
                     return;
                 }
-
                 ctx.Client.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
                 RLog.Log("Client Sent: " + message.GetType());
                 ctx.Buffer_Clear();
