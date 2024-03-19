@@ -8,8 +8,6 @@ namespace MortiseFrame.Rill {
 
     internal class ClientContext {
 
-        internal bool isTest;
-
         Socket client;
         internal Socket Client => client;
 
@@ -138,6 +136,11 @@ namespace MortiseFrame.Rill {
             lock (locker) {
                 return receiveDataQueue.TryDequeue(out data);
             }
+        }
+
+        // Thread
+        internal void ReceiveThread_Set(Thread thread) {
+            receiveThread = thread;
         }
 
         internal void Clear() {

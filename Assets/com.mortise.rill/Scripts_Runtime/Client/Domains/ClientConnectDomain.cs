@@ -19,6 +19,8 @@ namespace MortiseFrame.Rill {
                 Accept(ctx, remoteIP, port);
             });
 
+            ctx.ReceiveThread_Set(receiveThread);
+
         }
 
         static void Accept(ClientContext ctx, string remoteIP, int port) {

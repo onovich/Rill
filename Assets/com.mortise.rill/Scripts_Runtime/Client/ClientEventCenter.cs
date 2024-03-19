@@ -12,6 +12,7 @@ namespace MortiseFrame.Rill {
         internal ClientEventCenter() {
             eventsDict = new Dictionary<int, List<Action<IMessage>>>();
             errorEvent = new List<Action<string>>();
+            connectEvent = new List<Action>();
         }
 
         internal void On<T>(ClientContext ctx, Action<IMessage> listener) where T : IMessage {
