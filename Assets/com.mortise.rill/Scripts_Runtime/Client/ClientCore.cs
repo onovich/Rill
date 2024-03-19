@@ -26,7 +26,7 @@ namespace MortiseFrame.Rill {
 
         // Send
         public void Send(IMessage msg) {
-            ctx.Message_Enqueue(msg);
+            ClientSendDomain.Enqueue(ctx, msg);
         }
 
         // Connect
