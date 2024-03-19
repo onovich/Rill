@@ -24,8 +24,8 @@ namespace MortiseFrame.Rill {
             var receiveThread = new Thread(() => {
                 Accept(ctx, remoteIP, port);
             });
-
             ctx.ReceiveThread_Set(receiveThread);
+            receiveThread.Start();
 
         }
 

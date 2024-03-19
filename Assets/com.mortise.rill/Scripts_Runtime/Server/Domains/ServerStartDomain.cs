@@ -15,9 +15,8 @@ namespace MortiseFrame.Rill {
             var listenerThread = new Thread(() => { Bind(ctx, ip, port); });
             listenerThread.IsBackground = true;
             listenerThread.Priority = ThreadPriority.BelowNormal;
-            listenerThread.Start();
-
             ctx.ListnerThread_Set(listenerThread);
+            listenerThread.Start();
         }
 
         static void Bind(ServerContext ctx, IPAddress ip, int port) {
