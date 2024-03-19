@@ -9,17 +9,21 @@ namespace MortiseFrame.Rill {
     internal static class ServerStartDomain {
 
         internal static void Start(ServerContext ctx, IPAddress ip, int port) {
-            if (ctx.Active) return;
+            if (ctx.Active) {
+                return;
+            }
 
-            RLog.Log("[] Server: Start port = " + port);
-            var listenerThread = new Thread(() => { Bind(ctx, ip, port); });
+            var listenerThread = new Thread(() => {
+                Listen(ctx, ip, port);
+            });
+
             listenerThread.IsBackground = true;
             listenerThread.Priority = ThreadPriority.BelowNormal;
             ctx.ListnerThread_Set(listenerThread);
             listenerThread.Start();
         }
 
-        static void Bind(ServerContext ctx, IPAddress ip, int port) {
+        static void Listen(ServerContext ctx, IPAddress ip, int port) {
             try {
 
                 IPEndPoint localEndPoint = new IPEndPoint(ip, port);

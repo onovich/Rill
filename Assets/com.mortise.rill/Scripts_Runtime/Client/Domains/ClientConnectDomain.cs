@@ -10,45 +10,44 @@ namespace MortiseFrame.Rill {
 
         internal static void Connect(ClientContext ctx, string remoteIP, int port) {
             if (ctx.Connecting || ctx.Connected) {
-                RLog.Warning("Client can not create connection because an existing connection is connecting or connected");
                 return;
             }
 
-            var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            ctx.Client_Set(client);
-
             ctx.Connecting_Set(true);
-
-            RLog.Log("Client connecting to ip=" + remoteIP + " port=" + port);
+            RLog.Log("Client Connecting To IP = " + remoteIP + " PORT = " + port);
 
             var receiveThread = new Thread(() => {
-                Accept(ctx, remoteIP, port);
+                Listen(ctx, remoteIP, port);
             });
+
+            receiveThread.IsBackground = true;
             ctx.ReceiveThread_Set(receiveThread);
             receiveThread.Start();
-
         }
 
-        static void Accept(ClientContext ctx, string remoteIP, int port) {
+        static void Listen(ClientContext ctx, string remoteIP, int port) {
 
             Thread sendThread = null;
 
             try {
 
-                var client = ctx.Client;
+                var client = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                ctx.Client_Set(client);
+
                 IPAddress ipAddress = IPAddress.Parse(remoteIP);
                 IPEndPoint ep = new IPEndPoint(ipAddress, port);
-                client.Connect(ep);
-                ctx.Connecting_Set(false);
-
-                RLog.Log("Client connected to ip=" + remoteIP + " port=" + port);
 
                 client.NoDelay = CommonConst.NoDelay;
                 client.SendTimeout = CommonConst.SendTimeout;
                 client.ReceiveTimeout = CommonConst.ReceiveTimeout;
 
+                client.Connect(ep);
+                ctx.Connecting_Set(false);
+
+                RLog.Log("Client Is Connected to IP = " + remoteIP + " PORT = " + port);
+
                 sendThread = new Thread(() => {
-                    // ThreadFunctions.SendLoop(0, state.client, state.sendPipe, state.sendPending);
+                    ClientSendDomain.ThreadTick_Send(ctx);
                 });
                 sendThread.IsBackground = true;
                 sendThread.Start();
@@ -64,7 +63,6 @@ namespace MortiseFrame.Rill {
             } catch (Exception exception) {
                 RLog.Error("Client Recv Exception: " + exception);
             }
-            // state.receivePipe.Enqueue(0, EventType.Disconnected, default);
 
             sendThread?.Interrupt();
             ctx.Connecting_Set(false);
