@@ -8,11 +8,13 @@ namespace MortiseFrame.Rill {
         readonly Dictionary<int, List<Action<IMessage>>> eventsDict;
         readonly List<Action<string>> errorEvent;
         readonly List<Action> connectEvent;
+        readonly List<Action> disconnectEvent;
 
         internal ClientEventCenter() {
             eventsDict = new Dictionary<int, List<Action<IMessage>>>();
             errorEvent = new List<Action<string>>();
             connectEvent = new List<Action>();
+            disconnectEvent = new List<Action>();
         }
 
         internal void On<T>(ClientContext ctx, Action<IMessage> listener) where T : IMessage {
@@ -32,6 +34,10 @@ namespace MortiseFrame.Rill {
             connectEvent.Add(listener);
         }
 
+        internal void OnDisconnect(ClientContext ctx, Action listener) {
+            disconnectEvent.Add(listener);
+        }
+
         internal void Off<T>(ClientContext ctx, Action<IMessage> listener) where T : IMessage {
             var msgId = ctx.GetMessageID<T>();
             if (eventsDict.ContainsKey(msgId)) {
@@ -45,6 +51,10 @@ namespace MortiseFrame.Rill {
 
         internal void OffConnect(ClientContext ctx, Action listener) {
             connectEvent.Remove(listener);
+        }
+
+        internal void OffDisconnect(ClientContext ctx, Action listener) {
+            disconnectEvent.Remove(listener);
         }
 
         internal void Emit(int msgId, IMessage msg) {
@@ -67,10 +77,17 @@ namespace MortiseFrame.Rill {
             }
         }
 
+        internal void EmitDisconnect() {
+            foreach (var listener in disconnectEvent) {
+                listener?.Invoke();
+            }
+        }
+
         internal void Clear() {
             eventsDict.Clear();
             errorEvent.Clear();
             connectEvent.Clear();
+            disconnectEvent.Clear();
         }
 
     }

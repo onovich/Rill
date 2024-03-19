@@ -56,6 +56,7 @@ namespace MortiseFrame.Rill {
 
             } catch (SocketException exception) {
                 RLog.Log("Client Recv: failed to connect to ip=" + remoteIP + " port=" + port + " reason=" + exception);
+                ctx.Evt.EmitDisconnect();
             } catch (ThreadInterruptedException) {
             } catch (ThreadAbortException) {
             } catch (ObjectDisposedException) {

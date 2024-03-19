@@ -47,6 +47,10 @@ namespace MortiseFrame.Rill {
             ctx.Evt.OnConnect(ctx, listener);
         }
 
+        public void OnDisconnect(Action listener) {
+            ctx.Evt.OnDisconnect(ctx, listener);
+        }
+
         // Off
         public void Off<T>(Action<object> listener) where T : IMessage {
             ctx.Evt.Off<T>(ctx, listener);
@@ -58,6 +62,10 @@ namespace MortiseFrame.Rill {
 
         public void OffConnect(Action listener) {
             ctx.Evt.OffConnect(ctx, listener);
+        }
+
+        public void OffDisconnect(Action listener) {
+            ctx.Evt.OffDisconnect(ctx, listener);
         }
 
         // Stop
