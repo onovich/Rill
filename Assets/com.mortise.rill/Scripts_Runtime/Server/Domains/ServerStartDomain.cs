@@ -47,6 +47,7 @@ namespace MortiseFrame.Rill {
                     int clientIndex = ctx.IDService.PickClientIndex();
                     var client = new ConnectionEntity(clientfd, clientIndex);
                     ctx.Connection_Add(client);
+                    RLog.Log("Server Client Connected: " + clientfd.RemoteEndPoint);
 
                     ctx.Evt.EmitConnect(client);
 
