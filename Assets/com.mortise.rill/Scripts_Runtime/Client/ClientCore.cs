@@ -52,7 +52,7 @@ namespace MortiseFrame.Rill {
         }
 
         // Off
-        public void Off<T>(Action<object> listener) where T : IMessage {
+        public void Off<T>(Action<IMessage> listener) where T : IMessage {
             ctx.Evt.Off<T>(ctx, listener);
         }
 
