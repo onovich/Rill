@@ -17,24 +17,4 @@ public struct LoginResMessage : IMessage {
         userToken = ByteReader.ReadUTF8String(src, ref offset);
     }
 
-    public int GetEvaluatedSize(out bool isCertain) {
-        int count = ByteCounter.Count<sbyte>() + ByteCounter.CountUTF8String(userToken);
-        isCertain = false;
-        return count;
-    }
-
-    public byte[] ToBytes() {
-        int count = GetEvaluatedSize(out bool isCertain);
-        int offset = 0;
-        byte[] src = new byte[count];
-        WriteTo(src, ref offset);
-        if (isCertain) {
-            return src;
-        } else {
-            byte[] dst = new byte[offset];
-            Buffer.BlockCopy(src, 0, dst, 0, offset);
-            return dst;
-        }
-    }
-
 }
