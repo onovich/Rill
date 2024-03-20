@@ -234,8 +234,9 @@ int BufferLength = 4096;
 ```
 
 # Dependency
-Math library
-[Abacus](https://github.com/onovich/Abacus)
+# Dependency
+Serialization / Deserialization Tool 
+[LitIO](https://github.com/onovich/LitIO)
 
 # UPM URL
 ssh://git@github.com/onovich/Rill.git?path=/Assets/com.mortise.rill#main
