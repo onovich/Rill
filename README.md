@@ -1,6 +1,6 @@
 # Rill
 Rill is a lightweight networking library based on Socket and TCP, named after a "small stream", signifying a continuous and gentle flow.<br/>
-**Rill 是基于 Socket 和 TCP 的轻量级网络库，名称取自于“小溪”，涓流细而不息。**
+**Rill 是基于 Socket 和 TCP 的轻量级网络库，名称取自于“小溪”，涓流细而不止。**
 
 It utilizes safe multithreading and employs ManualResetEvent to avoid wasteful idle cycles when the message queue is empty (inspired by the approach taken in Telepathy).<br/>
 **线程安全，使用 ManualResetEvent 避免消息队列为空时的空转损耗（参考了 Telepathy 的写法）**
