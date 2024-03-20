@@ -241,9 +241,6 @@ int ReceiveTimeout = 0;
 int BufferLength = 4096;
 ```
 
-# 
-
-# Dependency
 # Dependency
 Serialization / Deserialization Tool 
 [LitIO](https://github.com/onovich/LitIO)
