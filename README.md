@@ -15,7 +15,7 @@ The core functionalities have been developed, but they have not been tested in c
 
 # To Be Implemented
 - Server max message size limit (important).
-- Pool.
+- No GC (with Pool or Marshal)
 
 # Project Sample
 Ping, a game similar to Pong, but requires two players to play online.<br/>
