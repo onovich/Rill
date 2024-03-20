@@ -17,6 +17,11 @@ The core functionalities have been developed, but they have not been tested in c
 - Server max message size limit.
 - Pool.
 
+# Project Sample
+Ping, a game similar to Pong, but requires two players to play online.<br/>
+[Client](https://github.com/onovich/Ping)<br/>
+[Server](https://github.com/onovich/Ping_Server)
+
 # Client Sample
 ```
 //  Register
