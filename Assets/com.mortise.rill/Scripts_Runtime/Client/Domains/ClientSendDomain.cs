@@ -57,7 +57,7 @@ namespace MortiseFrame.Rill {
                 offset = 0;
                 ByteWriter.Write<int>(buff, len, ref offset);
 
-                if (offset == 0) {
+                if (len == 0) {
                     return;
                 }
                 ctx.Client.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
