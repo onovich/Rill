@@ -14,7 +14,7 @@ The core functionalities have been developed, but they have not been tested in c
 **功能基本完成，未经商业项目实验。不建议用于正式项目。可以用于小型项目或者参考学习。**
 
 # To Be Implemented
-- Server max message size limit.
+- Server max message size limit (important).
 - Pool.
 
 # Project Sample
