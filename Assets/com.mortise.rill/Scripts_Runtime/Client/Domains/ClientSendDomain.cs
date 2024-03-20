@@ -60,7 +60,7 @@ namespace MortiseFrame.Rill {
                 if (len == 0) {
                     return;
                 }
-                ctx.Client.Send(buff, 0, offset, System.Net.Sockets.SocketFlags.None);
+                ctx.Client.Send(buff, 0, len, System.Net.Sockets.SocketFlags.None);
                 ctx.WriteBuffer_Clear();
             }
         }
