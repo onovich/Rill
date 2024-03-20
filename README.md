@@ -137,6 +137,9 @@ void On(ServerCore server) {
     server.OnConnected((conn) => OnNetResConnect(conn));
     server.OnError((msg, conn) => OnNetResConnectError(loginBusinessContext, msg, conn));
     server.OnDisconnected((conn) => OnNetResDisconnect(conn));
+
+    // "conn" refers to ConnectionEntity, which is a high-level encapsulation of a Socket client.
+    // Each ConnectionEntity is assigned a unique auto-increment index upon creation.
 }
 
 //  Off
@@ -232,6 +235,8 @@ int SendTimeout = 5000;
 int ReceiveTimeout = 0;
 int BufferLength = 4096;
 ```
+
+# 
 
 # Dependency
 # Dependency
