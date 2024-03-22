@@ -25,7 +25,7 @@ namespace MortiseFrame.Rill {
                 }
 
             } catch (Exception exception) {
-                RLog.Log(" ReceiveLoop: finished receive function for:" + exception);
+                RLog.Log(" ReceiveLoop: Finished Receive Function For:" + exception);
             } finally {
                 ctx.Client.Close();
                 ctx.Evt.EmitDisconnect();

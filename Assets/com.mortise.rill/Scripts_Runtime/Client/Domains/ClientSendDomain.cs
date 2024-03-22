@@ -9,7 +9,6 @@ namespace MortiseFrame.Rill {
         // Enqueue
         internal static void Enqueue(ClientContext ctx, IMessage msg) {
             ctx.Message_Enqueue(msg);
-            RLog.Log("Client Enqueued: " + msg.GetType());
             ctx.SendPending_Set();
         }
 

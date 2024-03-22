@@ -44,8 +44,6 @@ namespace MortiseFrame.Rill {
                 ctx.Connecting_Set(false);
                 ctx.Evt.EmitConnect();
 
-                RLog.Log("Client Is Connected to IP = " + remoteIP + " PORT = " + port);
-
                 sendThread = new Thread(() => {
                     ClientSendDomain.ThreadTick_Send(ctx);
                 });
@@ -55,13 +53,13 @@ namespace MortiseFrame.Rill {
                 ClientReceiveDomain.ThreadTick_Receive(ctx);
 
             } catch (SocketException exception) {
-                RLog.Log("Client Recv: failed to connect to ip=" + remoteIP + " port=" + port + " reason=" + exception);
+                RLog.Log("Client Receive: Failed To Connect To IP =" + remoteIP + " PORT = " + port + " Reason = " + exception);
                 ctx.Evt.EmitDisconnect();
             } catch (ThreadInterruptedException) {
             } catch (ThreadAbortException) {
             } catch (ObjectDisposedException) {
             } catch (Exception exception) {
-                RLog.Error("Client Recv Exception: " + exception);
+                RLog.Error("Client Receive Exception: " + exception);
             }
 
             sendThread?.Interrupt();

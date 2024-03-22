@@ -6,7 +6,7 @@ namespace MortiseFrame.Rill {
 
             if (!ctx.Active) return;
 
-            RLog.Log("[] Server: stopping...");
+            RLog.Log("[] Server: Stopping...");
 
             ctx.Listener?.Close();
 
